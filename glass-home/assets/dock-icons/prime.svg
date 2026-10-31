@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Solid Square Background -->
+  <rect width="512" height="512" fill="#00A8E1" />
+  
+  <g transform="translate(256, 245)">
+    <!-- Stacked "prime video" Text -->
+    <text x="0" y="-10" font-family="&#39;Amazon Ember&#39;, &#39;Helvetica Neue&#39;, Helvetica, Arial, sans-serif" font-weight="800" font-size="125" fill="#FFFFFF" text-anchor="middle" letter-spacing="-3">prime</text>
+    <text x="0" y="100" font-family="&#39;Amazon Ember&#39;, &#39;Helvetica Neue&#39;, Helvetica, Arial, sans-serif" font-weight="800" font-size="125" fill="#FFFFFF" text-anchor="middle" letter-spacing="-3">video</text>
+    
+    <!-- Amazon Smile Arrow -->
+    <g transform="translate(0, 140) scale(1.1)">
+      <!-- Smile Curve -->
+      <path fill="#FFFFFF" d="M 124 16.5 C 88.5 37.5 47.5 47.5 4 47.5 C -47.5 47.5 -94 31 -129.5 -2 C -133.5 -6 -132.5 -13 -128.5 -16.5 C -124.5 -19.5 -117.5 -19 -114 -15 C -84 13.5 -44 28.5 2 28.5 C 41.5 28.5 79.5 19.5 111 0.5 C 115.5 -2 121 -1 124 3 C 126 7 128.5 13.5 124 16.5 Z" />
+      <!-- Smile Arrowhead -->
+      <path fill="#FFFFFF" d="M 143 -9 C 136.5 -8 129 -7.5 122.5 -8.5 C 116 -9.5 112 -15.5 114 -21.5 C 116 -28 123.5 -32 130.5 -31 C 139 -30 147 -29 154 -28 C 162 -27 166 -21 164.5 -13 C 162.5 -3.5 158 5 152 13 C 148 18 141 19 136 15 C 131.5 11.5 131 5.5 135 1 C 137.5 -2 140.5 -6 143 -9 Z" />
+    </g>
+  </g>
+</svg>

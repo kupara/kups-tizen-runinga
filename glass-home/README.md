@@ -1,0 +1,228 @@
+# Glass Home
+
+A minimal, Apple TV-style home screen for Samsung Tizen TVs, plus a small
+password-protected website, served by the TV itself, for adding photos and
+shortcuts from your phone.
+
+![Glass Home on the TV](docs/screenshots/home.png)
+
+- Full-screen photos that crossfade every 45 seconds with a slow drift: 12
+  bundled CC0 nature photos mixed with your own, shuffled once a day.
+- A frosted-glass dock of your apps, then your website and YouTube shortcuts,
+  then **+**.
+- Clock and date, and optionally the weather (now plus 7 days, from
+  [Open-Meteo](https://open-meteo.com/), no account or key).
+- A screensaver (only the photos after 3 minutes idle; the first button press
+  just wakes the screen) and dimmed photos in the evening.
+- **+** shows the address and password of the TV's photo website. Open it on
+  your phone to upload photos (resized on the phone, so iPhone HEIC works) and
+  add YouTube or website shortcuts.
+- Plain HTML, CSS and JavaScript. No frameworks, no tracking, no ads.
+
+![The + panel (desktop preview; on the TV it shows the TV's own address)](docs/screenshots/add-panel.png)
+
+Photos of it on the tested TV, and of the Samsung settings from the guide, are
+in [docs/screenshots/on-tv](docs/screenshots/on-tv/).
+
+## Read this first
+
+- **It does not replace Samsung's Home screen.** No app can on its own: the
+  Home button still opens Smart Hub. What works: pin Glass Home first on the
+  Home row, turn **Start with Smart Hub Home** off and **Autorun Last App** on,
+  and the TV starts in Glass Home. (Autorun Last App reopens the *last* app, so
+  turn the TV off from Glass Home if you want to come back to it.) Two other
+  projects, [CleanFrame](https://github.com/nthnclrk/CleanFrame) and
+  [Arn0](https://github.com/NelsonEU/arn0-tv), do change what Home opens, by
+  rewriting undocumented TV settings from Developer Mode. Each was tested on
+  one TV, and a firmware update can undo or break it.
+- **You install it yourself** in the TV's Developer Mode, signed with a free
+  Samsung developer certificate made for your TV. That needs a computer, about
+  an hour the first time, and a free Samsung account. There is no ready-made
+  download: a signed package only installs on the TV it was made for.
+- **Reported working on Samsung TVs from 2018 to 2025** (Tizen 4 to 10): see
+  [Tested TVs](#tested-tvs). Reports welcome. On 2018 TVs (Tizen 4) set
+  `photoService: false` and `smartHubLaunch: true` (see Settings).
+- **A big OS upgrade can delete it.** Samsung's Tizen OS upgrades (for example
+  to Tizen 9 / One UI Tizen) have removed sideloaded apps on other TVs. You can
+  reinstall it the same way.
+- **The photo website is plain HTTP** on your home network. It only answers
+  devices on your local network and needs the password, but anyone on the same
+  Wi-Fi who intercepts traffic could see the password and photos in transit.
+
+## Install
+
+Step by step: **[docs/INSTALL.md](docs/INSTALL.md)**. In short:
+
+1. Turn on Developer Mode on the TV.
+2. Install Samsung's Tizen SDK command-line tools on your computer.
+3. Make a free Samsung certificate for your TV (one browser sign-in).
+4. Set your options in [`app/js/config.js`](app/js/config.js).
+5. `scripts/build.sh`, then `scripts/install.sh`.
+6. Pin it on the Home row, set it to open at power-on, and turn Developer
+   Mode off again.
+
+## Settings
+
+All in [`app/js/config.js`](app/js/config.js):
+
+| Setting | What it does |
+|---|---|
+| `apps` | The dock apps, in order. Each is found by its Tizen app ID, then by name. Remove what you don't have. `icon: false` shows a plain name tile. |
+| `inputs` | HDMI ports as dock tiles, after the apps: `{ hdmi: 4, label: 'Games console' }`, optionally with an `icon` path under `app/`. Empty by default. |
+| `weather` | Off until you set `enabled: true`, `latitude` and `longitude` (`place` is the label shown under the forecast; `temperatureUnit: 'fahrenheit'` for °F). |
+| `locale` | Date and time format, e.g. `'en-GB'`; empty uses the TV's. |
+| `ambient` | Screensaver delay. |
+| `night` | Evening dimming hours (24-hour, TV clock). |
+| `youtubeMode` | How YouTube shortcuts are opened (see below). |
+| `photoIntervalMs` | How often the photo changes. |
+| `photoService` | `false` turns off the photo website, and with it **+**, shortcuts and your own photos. For TVs that can't run it (2018 models); also remove `<tizen:service>` and the `web.service` feature from `app/config.xml`. |
+| `smartHubLaunch` | `true` on older TVs where apps won't start from the dock: opens them through Samsung's own launcher and hides the photos while they start. Off by default. |
+| `returnHome` | `true` (default): when an app, website or YouTube shortcut opened from the dock closes, Glass Home comes back instead of Samsung's Home bar over Live TV. The photo service watches the app through the TV's local API; it can't tell Back from the Home button, so both come back. Needs `photoService`. |
+
+Your own logo: `scripts/use-logo.sh path/to/logo.png` (square, ideally 1024 x
+1024) makes the TV icon and the website icons. The on-screen name is in
+`app/index.html` (`brand-name`) and `app/config.xml` (`<name>`).
+
+## Using it
+
+| Remote | What happens |
+|---|---|
+| Left / Right | move along the dock |
+| OK | open the app, website or video, or switch to the HDMI input |
+| Hold OK | Move left, Move right, Remove (shortcuts) or Hide (apps and inputs), Cancel |
+| Back | closes the menu or the panel; does nothing on the home screen |
+| OK on **+** | the website address and password; New password; show hidden apps |
+
+**Photos and shortcuts.** On a phone on the same Wi-Fi, open the address shown
+under **+** and sign in with the password shown there. Upload photos (up to
+300, 500 MB in total; portrait photos are fitted on blurred edges or cropped),
+and add websites or YouTube links (videos, playlists, Shorts, links with a
+start time). New photos appear next on the TV. The phone stays signed in for
+30 days.
+
+**YouTube shortcuts** open the YouTube app at the video. On the tested TV the
+plain `watch?v=` link worked from a cold start and while YouTube was running;
+Samsung's documented `PAYLOAD` deep link lost the video at YouTube's "Who's
+watching?" screen. The switch at the bottom of the **+** panel cycles through
+watch URL, the PAYLOAD form, and both, if yours behaves differently.
+
+**Websites** open in Samsung's own browser (the code follows Samsung's documented
+method, but this wasn't tested on a TV yet).
+
+**HDMI inputs** (the `inputs` setting) switch the TV with
+`tizen.tvwindow.setSource`, then open Samsung's TV viewer
+(`org.tizen.tv-viewer`) so the input fills the screen. This needs the public
+`tv.window` privilege. Tested on a 2022 S95B (Tizen 6.5) with HDMI 4.
+
+## Tested TVs
+
+Reported by people running it. Thank you! To add yours, fill in a
+[TV report](https://github.com/victaphu/glass-home-samsung-tv/issues/new?template=tv-report.yml).
+
+| TV | Year | Tizen | Notes | Report |
+|---|---|---|---|---|
+| Samsung S85F | 2025 | 10 | | [#8](https://github.com/victaphu/glass-home-samsung-tv/issues/8) |
+| Samsung Q70C | 2023 | 8 | the TV it was built on | |
+| Samsung S95B | 2022 | 6.5 | HDMI input tiles tested here | [#10](https://github.com/victaphu/glass-home-samsung-tv/pull/10) |
+| Samsung Q80A | 2021 | 6.0 | | [#9](https://github.com/victaphu/glass-home-samsung-tv/issues/9) |
+| Samsung QN90A | 2021 | 6.0 | needed the CSS fixes from #5, now included | [#4](https://github.com/victaphu/glass-home-samsung-tv/issues/4) |
+| Samsung TU8000 | 2020 | 5.5 | photo service included | [#3](https://github.com/victaphu/glass-home-samsung-tv/pull/3) |
+| Samsung NU6900 | 2018 | 4.0 | with `photoService: false` and `smartHubLaunch: true` | [#2](https://github.com/victaphu/glass-home-samsung-tv/issues/2) |
+
+A 2017 MU7000 (Tizen 3.0) also runs it with two changes that aren't in this
+repository yet ([#6](https://github.com/victaphu/glass-home-samsung-tv/issues/6)).
+
+## How it works
+
+```
+ TV (one Tizen web app package)
+ ┌──────────────────────────────┐   http://127.0.0.1:8090/local/*    ┌────────────────────────────┐
+ │ Glass Home                   │ ─────────────────────────────────▶ │ Photos service             │
+ │ index.html, js/, css/        │   loopback + this install's key    │ app/service/*.js (Node)    │
+ │ dock, photos, clock, + panel │ ◀──── photos, shortcuts, password  │ port 8090 on the home LAN  │
+ └──────────────────────────────┘                                    └─────────────▲──────────────┘
+         starts the service at launch                                             │ http://<TV IP>:8090
+                                                                     phone on the home Wi-Fi, signed in
+```
+
+- **The app** is what you see. It asks the service for your photos and
+  shortcuts and keeps the last answer, so it still works if the service is
+  down.
+- **The service** is a Tizen web service inside the same package (Node.js;
+  the tested TV runs Node 16, the code sticks to the Node 12 API). It serves
+  the phone website and keeps everything in the app's private data folder,
+  which survives restarts and updates and is deleted with the app. (Only if
+  that folder isn't writable does it fall back to `/home/owner/share/GlassHome1`,
+  which is kept after uninstalling; the **+** panel shows which is in use.)
+- With the free (public-level) certificate the service can't start itself at
+  boot; the app starts it whenever it opens.
+
+**Security.** The password is three random words and two digits, stored as a
+PBKDF2-SHA256 hash. Five wrong tries lock a device out for 5 minutes, and a
+device guessing passwords can't block others from signing in. The site only
+answers private-network and loopback addresses, refuses other host names (DNS
+rebinding), and has CSRF protection and a strict content security policy.
+Uploads are checked as real JPEGs with size caps. The app and its service share
+a random key generated per install (never committed). So the TV can show the
+password after a restart, the service keeps it in a private file next to its
+hash.
+
+**Network use.** The app contacts nothing except the service itself;
+Open-Meteo if weather is on; each website you add, once, for its own icon (no
+third-party favicon services, never addresses on your home network); and
+YouTube for shortcut titles and thumbnails.
+
+## Develop
+
+Needs Node 22 (what it was developed and tested with) and a Chromium-based browser (Chrome, Brave, Chromium or Edge;
+set `BROWSER` to choose). The servers listen only on 127.0.0.1; the demo
+shortcuts and the tests fetch site icons and YouTube details from the
+internet (`node dev/run.js --no-fetch` avoids that, but some tests then fail).
+
+```
+node dev/run.js --demo     # service :18090, TV app :18091, throwaway data
+                           # TV app:  http://127.0.0.1:18091/index.html?preview=1
+                           # website: http://127.0.0.1:18090/ (password printed)
+dev/test-api.sh            # website + service API (curl)
+node dev/ui-test.js        # TV app and phone website in a headless browser
+node dev/test-netutil.js   # address rules (IPv4/IPv6, LAN, loopback, hosts)
+node dev/test-parsers.js   # hostile-page parsing stays fast
+node dev/test-limiter.js   # sign-in throttle and fair queue
+node dev/test-data.js      # TV app's service client
+node dev/test-ytparse.js   # YouTube link parser
+node dev/test-backdrop.js  # photo rotation
+node dev/lint-node12.js    # service code stays within the Node 12 API
+```
+
+GitHub runs all of these on every pull request and push to `main` (macOS,
+Node 22): [`.github/workflows/test.yml`](.github/workflows/test.yml).
+
+Preview options: `?preview=1`, `?api=…`, `?focus=N`, `?bg=nature-05.jpg`,
+`?panel=1`, `?menu=1`, `?still=1`, `?wx=mock` (sample weather), `?idle=MS`
+(screensaver delay), `?night=1`, `?inputs=1` (two sample HDMI tiles),
+`?photoService=0`.
+
+The dev tools and image scripts use macOS's `sips`; the app itself has no
+platform dependency.
+
+## Also in here
+
+- **[docs/SAMSUNG-SETTINGS.md](docs/SAMSUNG-SETTINGS.md):** turning off
+  Samsung's content recognition, ad ID, promotions and autoplay, a DNS ad
+  filter that kept every app working, and how to undo each.
+- **[`tools/`](tools/):** a standard-library Python remote for the TV's local
+  control API (`tvremote.py`), a page that turns an iPhone on the same Wi-Fi
+  into a camera pointed at the TV (`phonecam.py`; Samsung TVs can't take
+  screenshots), and Wake-on-LAN (`wake.py`).
+
+## How this was made
+
+Built in an evening with [Claude Code](https://claude.com/claude-code), which
+did the research, drove the TV over Wi-Fi, checked every step through the
+iPhone camera, and wrote and tested the app. It also watched one cat video.
+[Proof](docs/screenshots/keyboard-cat/).
+
+## Licence
+
+[MIT](LICENSE). Photo and data credits: [CREDITS.md](CREDITS.md). Not affiliated
+with Samsung, Apple or any app shown.

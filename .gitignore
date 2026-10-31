@@ -1,0 +1,19 @@
+# Secrets and keys (catch-all; glass-home/.gitignore has project-specific rules)
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.pwd
+*.crt
+*.csr
+*.keystore
+*.jks
+.claude/settings.local.json
+**/.claude/settings.local.json
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

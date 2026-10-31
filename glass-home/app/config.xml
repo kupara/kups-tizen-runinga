@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Glass Home - a minimal home screen for this Samsung TV (Tizen web app).
+  Package GlassHome1, UI app GlassHome1.GlassHome, service GlassHome1.Photos.
+  Public-level privileges only, so it installs with the free public
+  (distributor) certificate. No on-boot / auto-restart on the service: those
+  need a Partner certificate; the app starts the service itself.
+-->
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets"
+        id="http://glass-home.local/app" version="1.0.0" viewmodes="maximized">
+    <tizen:application id="GlassHome1.GlassHome" package="GlassHome1" required_version="3.0"/>
+    <name>Kups TV</name>
+    <description>Home screen with rotating photos, a dock of apps and shortcuts, and a password-protected website for adding photos.</description>
+    <content src="index.html"/>
+    <icon src="icon.png"/>
+
+    <feature name="http://tizen.org/feature/screen.size.all"/>
+    <!-- W3C <feature>, not <tizen:feature>; only a store filter. -->
+    <feature name="http://tizen.org/feature/web.service"/>
+
+    <!-- WARP: the app reaches its own service on 127.0.0.1, YouTube thumbnails
+         (i.ytimg.com) and, if weather is on, api.open-meteo.com; no CSP or allow-navigation, so
+         the app stays in WARP mode. -->
+    <access origin="*" subdomains="true"/>
+
+    <tizen:privilege name="http://tizen.org/privilege/internet"/>
+    <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
+    <tizen:privilege name="http://tizen.org/privilege/application.info"/>
+    <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
+    <!-- HDMI input tiles on the dock (tizen.tvwindow.setSource). Public level. -->
+    <tizen:privilege name="http://tizen.org/privilege/tv.window"/>
+
+    <tizen:profile name="tv-samsung"/>
+    <tizen:metadata key="http://samsung.com/tv/metadata/multitasking.support" value="true"/>
+
+    <!-- The LAN website for photos and shortcuts (Node API, started by the app). -->
+    <tizen:service id="GlassHome1.Photos">
+        <tizen:content src="service/index.js"/>
+        <tizen:name>Photos</tizen:name>
+        <tizen:description>Kups Home photo and shortcut website on port 8090</tizen:description>
+    </tizen:service>
+
+    <tizen:setting screen-orientation="landscape" context-menu="disable" background-support="disable"
+                   encryption="disable" install-location="auto" hwkey-event="enable"/>
+</widget>

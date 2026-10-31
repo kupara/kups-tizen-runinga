@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "kups-home-preview", "runtimeExecutable": "node", "runtimeArgs": ["dev/run.js", "--quiet"], "port": 18091 }
+  ]
+}

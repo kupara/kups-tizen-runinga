@@ -1,0 +1,38 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    # macOS: the dev tools make test images with sips, and the UI test drives
+    # the runner's Google Chrome.
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1  # v7.1.0
+        with:
+          node-version: 22
+      - name: Per-checkout key
+        run: dev/new-local-key.sh
+      - name: Service stays within the Node 12 API
+        run: node dev/lint-node12.js
+      - name: Unit tests
+        run: |
+          node dev/test-ytparse.js
+          node dev/test-netutil.js
+          node dev/test-backdrop.js
+          node dev/test-parsers.js
+          node dev/test-limiter.js
+          node dev/test-data.js
+      - name: Website and service API
+        run: dev/test-api.sh
+      - name: TV app and phone website in a browser
+        run: node dev/ui-test.js

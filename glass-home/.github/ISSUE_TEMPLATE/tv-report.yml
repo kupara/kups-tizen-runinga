@@ -1,0 +1,57 @@
+name: TV report
+description: Tell us whether Glass Home works on your TV, for the Tested TVs list.
+title: "Works on Samsung <model> (<year>, Tizen <version>)"
+labels: ["tv-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! Reports like this fill the [Tested TVs](https://github.com/victaphu/glass-home-samsung-tv#tested-tvs) list.
+        Please leave out serial numbers, IP addresses and anything else that identifies your home.
+  - type: input
+    id: model
+    attributes:
+      label: TV model
+      description: From Settings > Support > About This TV, for example QE55Q80A or S85F.
+    validations:
+      required: true
+  - type: input
+    id: year
+    attributes:
+      label: Model year
+      placeholder: "2021"
+    validations:
+      required: true
+  - type: input
+    id: tizen
+    attributes:
+      label: Tizen version
+      description: For example 6.0. If you're not sure, the model year is enough.
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware version
+      description: Settings > Support > Software Update, for example T-NKM2DEUC-2301.1.
+  - type: dropdown
+    id: result
+    attributes:
+      label: Does it work?
+      options:
+        - Works as it is
+        - Works with changes (described below)
+        - Doesn't work (described below)
+    validations:
+      required: true
+  - type: dropdown
+    id: photos
+    attributes:
+      label: The photo website (the + panel)
+      options:
+        - Works
+        - Doesn't work
+        - Didn't try
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: "What you changed, what broke, and any settings you used (for example `photoService: false`)."
