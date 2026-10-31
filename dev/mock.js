@@ -4,8 +4,9 @@
 (function () {
   'use strict';
   // Plain name tiles only: no imitation logos are drawn here.
-  var names = ['TizenBrewNextGeneration', 'Apple TV', 'YouTube', 'HBO Max', 'Netflix', 'Prime Video', 'Samsung TV Plus',
-    'Disney+', 'NPO Start', 'Spotify - Music and Podcasts', 'Internet'];
+  // The six apps the UI tests expect; config.js lists more, and the ones not
+  // installed here are left out of the dock.
+  var names = ['YouTube', 'HBO Max', 'Netflix', 'Prime Video', 'Disney+', 'Internet'];
   window.GH_MOCK = {
     apps: names.map(function (n) { return { id: 'mock.' + n.replace(/[^A-Za-z]/g, ''), name: n, iconPath: null }; })
   };
