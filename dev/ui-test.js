@@ -16,6 +16,9 @@ const ROOT = path.join(__dirname, '..');
 const OUT = path.join(ROOT, 'preview');
 const PORT = 18290;
 const UI = 18291;
+// Not in git (app/img/apps/ and brand-logo.png are .gitignored), so a fresh
+// checkout 404s on them and the app falls back to name tiles.
+const IGNORED_TV_ERRORS = /favicon\.ico|status of 404.*\/img\/(brand-logo\.png|apps\/)/;
 const K = { LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, ENTER: 13, BACK: 27 };
 
 let pass = 0;
@@ -176,7 +179,7 @@ async function tvState(p) {
     })()`);
     check('hidden -> paused, visible -> resumed', vis.paused && vis.resumed, vis);
 
-    const tvErrors = tv.errors.filter((e) => !/favicon\.ico/.test(e));
+    const tvErrors = tv.errors.filter((e) => !IGNORED_TV_ERRORS.test(e));
     check('no script errors in the TV app', tvErrors.length === 0, tvErrors);
 
     // An older build kept the password in localStorage: the next start removes it.
@@ -211,7 +214,7 @@ async function tvState(p) {
     s = await tvState(tvOld);
     check('no photo service: app menu has no Hide', JSON.stringify(s.menuItems) === JSON.stringify(['Move left*', 'Move right(x)', 'Cancel']), s.menuItems);
     await tvOld.key(K.BACK);
-    const oldErrors = tvOld.errors.filter((e) => !/favicon\.ico/.test(e));
+    const oldErrors = tvOld.errors.filter((e) => !IGNORED_TV_ERRORS.test(e));
     check('no photo service: no script errors', oldErrors.length === 0, oldErrors);
     await tvOld.close();
 
@@ -242,7 +245,7 @@ async function tvState(p) {
     s = await tvState(tvIn);
     check('inputs, no photo service: menu has no Hide or Remove', JSON.stringify(s.menuItems) === JSON.stringify(['Move left(x)', 'Move right*', 'Cancel']), s.menuItems);
     await tvIn.key(K.BACK);
-    const inErrors = tvIn.errors.filter((e) => !/favicon\.ico/.test(e));
+    const inErrors = tvIn.errors.filter((e) => !IGNORED_TV_ERRORS.test(e));
     check('inputs: no script errors', inErrors.length === 0, inErrors);
     await tvIn.eval(`localStorage.removeItem('gh.inputOrder')`);
     await tvIn.close();
